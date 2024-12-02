@@ -13,7 +13,7 @@ export const useCategory = () => {
       }
     }
     setCategoryArr(dumArr);
-  }, []);
+  }, [setCategoryArr]);
 
   return { category, setCategory, categoryArr, setCategoryArr };
 };
