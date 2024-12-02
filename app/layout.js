@@ -8,7 +8,7 @@ import CategoryProvider from "./providers/CategoryProvider";
 const inter = Poppins({ weight: "400", subsets: ["latin"] });
 
 export const metadata = {
-  title: "Protine Corner",
+  title: "Protein Corner",
   description: "Processed chicken, beef, meat, egg and milk",
 };
 
