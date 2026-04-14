@@ -1,18 +1,13 @@
-"use client";
+import PageLayout from "@/components/PageLayout";
 import Shop from "@/components/Shop";
-import ShopNav from "@/components/ShopNav";
-import SideCart from "@/components/SideCart";
-import colors from "../utils/colors";
-import Footer from "@/components/Footer";
+import { Suspense } from "react";
 
 export default function ShopPage() {
   return (
-    <div className={`overflow-y-auto overflow-x-hidden h-full w-full scrollbar-thin ${colors.scrollbar
-    } scrollbar-track-[#e8e8e8]`}>
-      <SideCart/>
-      <ShopNav/>
-      <Shop />
-      <Footer/>
-    </div>
+    <PageLayout>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Shop />
+      </Suspense>
+    </PageLayout>
   );
 }

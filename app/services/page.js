@@ -1,8 +1,10 @@
-'use client'
+import PageLayout from "@/components/PageLayout";
 import Service from "@/components/Service";
 
-export default function ServicePage() {
+export default function ServicesPage() {
   return (
-      <Service/>
+    <PageLayout>
+      <Service />
+    </PageLayout>
   );
 }

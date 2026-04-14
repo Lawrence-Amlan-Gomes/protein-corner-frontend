@@ -1,33 +1,25 @@
 import { Poppins } from "next/font/google";
+import { AuthProvider, CartProvider } from "./contexts";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import ThemeProvider from "./providers/CartProvider";
-import CartProvider from "./providers/CartProvider";
-import CategoryProvider from "./providers/CategoryProvider";
 
-const inter = Poppins({ weight: "400", subsets: ["latin"] });
+const inter = Poppins({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
 
 export const metadata = {
-  title: "Protein Corner",
-  description: "Processed chicken, beef, meat, egg and milk",
+  title: "Protein Corner - Quality Processed Foods",
+  description:
+    "Premium processed chicken, beef, eggs, fish, and milk delivered to your door. Quality you can taste.",
 };
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      name="viewport"
-      content="width=device-width, initial-scale=1"
-    >
-      <body className="overflow-hidden">
-        <CartProvider>
-          <CategoryProvider>
-            <div className={`h-screen overflow-hidden ${inter.className}`}>
-              <Navbar />
-              <div className="h-[90%] overflow-hidden">{children}</div>
-            </div>
-          </CategoryProvider>
-        </CartProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,155 +1,124 @@
 "use client";
-import colors from "@/app/utils/colors";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import EachField from "./EachField";
-// import { performLogin } from "@/app/actions";
-// import { useAuth } from "@/app/hooks/useAuth";
-import { useCart } from "@/app/hooks/useCart";
+
+import { useAuth } from "@/app/contexts";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-const LoginForm = () => {
-  const { theme } = useCart();
-  //   const { setAuth } = useAuth();
-  const router = useRouter();
-  const [isTyping, setIsTyping] = useState(true);
+export default function LoginForm() {
   const [email, setEmail] = useState("");
-  const [mainError, setMainError] = useState({
-    isError: false,
-    error: "Email or password is incorrect",
-  });
-  const [emailError, setEmailError] = useState({
-    iserror: false,
-    error: "",
-  });
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState({
-    iserror: false,
-    error: "",
-  });
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
 
-  useEffect(() => {
-    setEmailError({
-      iserror: false,
-      error: "",
-    });
-    setPasswordError({
-      iserror: false,
-      error: "",
-    });
-    setMainError({
-      isError: false,
-      error: "Email or password is incorrect",
-    });
-    setIsTyping(true);
-  }, [email, password]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError("");
 
-  const submitForm = async () => {
-    // try {
-    //   const found = await performLogin({
-    //     email: email,
-    //     password: password,
-    //   });
-    //   if (found) {
-    //     setAuth(found);
-    //     router.push("/");
-    //   } else {
-    //     setEmailError({
-    //       iserror: true,
-    //       error: "",
-    //     });
-    //     setPasswordError({
-    //       iserror: true,
-    //       error: "",
-    //     });
-    //     setMainError({
-    //       isError: true,
-    //       error: "Email or password is incorrect",
-    //     });
-    //     setIsTyping(false);
-    //   }
-    // } catch (error) {
-    //   console.log("Something went wrong");
-    // }
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    // Simulate login - in production, this would call an API
+    const userData = {
+      email,
+      name: email.split("@")[0],
+    };
+
+    login(userData);
+    router.push("/");
   };
+
   return (
-    <div
-      className={`h-full w-full flex justify-center items-center overflow-y-auto ${colors.bgBody}`}
-    >
-      <div
-        className={`lg:p-10 p-5 rounded-lg lg:w-[400px] md:w-[300px] sm:w-[270px] w-[250px] text-center shadow-lg
-         bg-[#eeeeee] border-[1px] border-[#dddddd] text-[#0a0a0a]`}
-      >
-        <div className="lg:text-[30px] sm:text-[20px] text-[18px] font-bold lg:mb-10 mb-5">
-          Login
-        </div>
-        {/* Trick the browser with this fake email and password field */}
-        <div className="opacity-0">
-          <EachField
-            label="fake"
-            type="email"
-            name="email"
-            isReal={false}
-            placeholder="Enter your email"
-            value={email}
-            setValue={setEmail}
-            iserror={emailError.iserror}
-            error={emailError.error}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <Image
+            src="/Logo.png"
+            alt="Protein Corner Logo"
+            width={80}
+            height={80}
+            className="mx-auto rounded-full"
           />
-          <EachField
-            label="fake"
-            type="password"
-            name="password"
-            isReal={false}
-            placeholder="Enter your password"
-            value={password}
-            setValue={setPassword}
-            iserror={passwordError.iserror}
-            error={passwordError.error}
-          />
+          <h2 className="mt-6 text-3xl font-bold">Sign in to your account</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Welcome back to Protein Corner
+          </p>
         </div>
-        <EachField
-          label="Email"
-          type="email"
-          name="email"
-          isReal={true}
-          placeholder="Enter your email"
-          value={email}
-          setValue={setEmail}
-          iserror={emailError.iserror}
-          error={emailError.error}
-        />
-        <EachField
-          label="Password"
-          type="password"
-          name="password"
-          isReal={true}
-          placeholder="Enter your password"
-          value={password}
-          setValue={setPassword}
-          iserror={passwordError.iserror}
-          error={passwordError.error}
-        />
-        {mainError.isError ? (
-          <div className="mt-3 text-red-600">{mainError.error}</div>
-        ) : (
-          <></>
-        )}
-        <button
-          onClick={submitForm}
-          className={`lg:text-[18px] md:text-[15px] text-[12px] text-white cursor-pointer rounded-full lg:mt-10 mt-5 py-2 px-6  ${"bg-green-800 hover:bg-green-700"}`}
-        >
-          Login
-        </button>
-        <p className="lg:mt-10 mt-5 lg:text-[18px] md:text-[15px] text-[12px]">
-          No Account?{" "}
-          <Link href="/register" className="text-blue-600 hover:text-blue-500">
-            Register
-          </Link>
-        </p>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200"
+            >
+              Sign in
+            </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Don&#39;t have an account?{" "}
+              <a
+                href="/register"
+                className="font-medium text-orange-600 hover:text-orange-500"
+              >
+                Sign up
+              </a>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );
-};
-
-export default LoginForm;
+}

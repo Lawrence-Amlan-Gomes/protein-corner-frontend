@@ -1,82 +1,66 @@
-import colors from "@/app/utils/colors";
+"use client";
+
+import { useCart } from "@/app/contexts";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import cart from "../public/cart.png";
-import eye from "../public/eye.png";
 import AddToCartCom from "./AddToCartCom";
-import { useCategory } from "@/app/hooks/useCategory";
+import Star from "./Star";
 
-function EachProduct({ product }) {
-  const { category } = useCategory();
-  let currentPrice = product.price;
-  if (product.discount != 0) {
-    currentPrice = Math.round(
-      product.price - (product.discount * product.price) / 100
-    );
-  }
+export default function EachProduct({ product }) {
+  const { addToCart } = useCart();
+
   return (
-    <>
-      {product.category == category || category == "All" ? (
-        <div
-          className={`hover:shadow-lg border-[1px] border-[#aaaaaa] lg:h-[500px] h-[450px] w-[96%] lg:w-[23%] bg-[#ffffff] float-left lg:m-[1%] m-[2%] rounded-md overflow-hidden relative`}
-        >
-          <div className={`w-full lg:h-[250px] h-[250px] float-left`}>
-            <div
-              className={`absolute z-10 mt-5 ml-5 w-[25%] h-[30px] ${
-                product.discount != 0 ? "visible" : "hidden"
-              } rounded-md text-white flex justify-center items-center font-bold ${
-                colors.keyColorBox2
-              }`}
-            >
-              {product.discount != 0 ? `-${product.discount}%` : <></>}
-            </div>
-            <div
-              className={`lg:h-full h-[90%] lg:w-full w-[70%] lg:ml-0 ml-[15%] lg:mt-0 mt-[5%] relative flex justify-center items-center overflow-hidden`}
-            >
-              <Link href={`/product/${product.id}`}>
-                <div className="h-[200px] w-[200px] relative">
-                  <Image
-                    sizes="full"
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div
-            className={`w-full lg:h-[250px] h-[200px] border-t-[1px] float-left flex justify-center items-start pt-[5%]`}
-          >
-            <div className="w-full">
-              <Link href={`/product/${product.id}`}>
-                <div className={`w-full text-center my-[2%] lg:text-[25px] font-extrabold text-[20px]`}>
-                  {product.name}
-                </div>{" "}
-              </Link>
-              <div
-                className={`w-full text-center mb-[10px] lg:text-[18px] ${colors.keyColorText2}`}
-              >
-                {currentPrice} tk{" "}
-                {product.discount != 0 ? (
-                  <span className="ml-3 line-through text-[#888888]">
-                    {product.price} tk
-                  </span>
-                ) : (
-                  ""
-                )}
-              </div>
-              <div className={`flex absolute bottom-0 mb-5 justify-center items-center w-full`}>
-                <AddToCartCom product={product} />
-              </div>
-            </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+    >
+      <Link href={`/product/${product.id}`}>
+        <div className="relative h-48 overflow-hidden bg-gray-100">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-cover hover:scale-105 transition-transform duration-300"
+          />
+          <div className="absolute top-2 right-2 bg-orange-600 text-white text-xs px-2 py-1 rounded-full">
+            {product.category}
           </div>
         </div>
-      ) : (
-        <></>
-      )}
-    </>
+      </Link>
+
+      <div className="p-4">
+        <Link href={`/product/${product.id}`}>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 hover:text-orange-600 transition-colors">
+            {product.name}
+          </h3>
+        </Link>
+
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+          {product.description}
+        </p>
+
+        <div className="flex items-center mb-3">
+          <Star rating={product.rating} />
+          <span className="text-sm text-gray-500 ml-2">
+            ({product.reviews})
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-2xl font-bold text-orange-600">
+            ${product.price.toFixed(2)}
+          </span>
+          <AddToCartCom
+            onClick={() => addToCart(product)}
+            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+          >
+            Add to Cart
+          </AddToCartCom>
+        </div>
+      </div>
+    </motion.div>
   );
 }
-export default EachProduct;

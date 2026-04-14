@@ -1,19 +1,23 @@
-"use client"
-import colors from "@/app/utils/colors";
-import { useEffect, useState } from "react";
+"use client";
 
-export default function CategoryItem({ name, setCategory, category }) {
-  const [active, setActive] = useState(false)
-  useEffect(()=>{
-    if(name == category){
-      setActive(true)
-    }else{
-      setActive(false)
-    }
-  },[category, name])
+import { motion } from "framer-motion";
+import Link from "next/link";
+
+export default function CategoryItem({ category, isActive }) {
   return (
-    <div onClick={()=>setCategory(name)} className={`h-[30px] cursor-pointer lg:text-[18px] text-[16px] overflow-hidden float-left ${active ? colors.keyColorText : colors.textBody1} hover:font-bold ${colors.keyColorTextHover} flex justify-center items-center`}>
-      {name}
-    </div>
+    <Link href={`/shop?category=${category.id}`}>
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`flex flex-col items-center justify-center p-6 rounded-xl cursor-pointer transition-all duration-200 ${
+          isActive
+            ? "bg-orange-600 text-white shadow-lg"
+            : "bg-white text-gray-900 hover:bg-gray-50 shadow-md"
+        }`}
+      >
+        <span className="text-4xl mb-2">{category.icon}</span>
+        <span className="font-semibold">{category.name}</span>
+      </motion.div>
+    </Link>
   );
 }

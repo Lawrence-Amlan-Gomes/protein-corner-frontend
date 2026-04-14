@@ -1,99 +1,116 @@
 "use client";
-import colors from "@/app/utils/colors";
-import navItems from "@/app/utils/navItems";
+
+import { useCart } from "@/app/contexts";
 import Image from "next/image";
-import logo from "../public/Logo.png";
-import cross from "../public/cross.png";
-import menu from "../public/menu.png";
-import Login from "./Login";
-import NavItem from "./NavItem";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import CartIcon from "./CartIcon";
 
-const Navbar = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  useEffect(() => {
-    if (showMenu) {
-      setTimeout(() => {
-        setShowMenu(false);
-      }, 5000);
-    }
-  }, [showMenu]);
+export default function Navbar() {
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { cartCount } = useCart();
+
+  const navItems = [
+    { name: "Home", href: "/" },
+    { name: "Shop", href: "/shop" },
+    { name: "About", href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Clients", href: "/clients" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  const isActive = (href) => pathname === href;
+
   return (
-    <div
-      className={`h-[10%] w-full ralative z-50 border-[#bbbbbb] border-b-[1px]`}
-    >
-      <div
-        className={`h-full w-full 
-             ${colors.bgNav} ${colors.textNav}
-       `}
-      >
-        <div className="h-full w-[40%] lg:w-[20%] lg:ml-[5%] float-left flex justify-center items-center">
-          <div className="sm:w-[70px] sm:h-[30px] lg:w-full lg:h-[70%] w-[100px] h-[40px] sm:mr-5 relative">
-            <Link href={"/"}>
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <Image
+              src="/Logo.png"
+              alt="Protein Corner Logo"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <span className="text-xl font-bold text-gray-900">
+              Protein Corner
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`text-sm font-medium transition-colors duration-200 ${
+                  isActive(item.href)
+                    ? "text-orange-600"
+                    : "text-gray-700 hover:text-orange-600"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-4">
+            <CartIcon count={cartCount} />
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
+            >
               <Image
-                src={logo}
-                alt={"logo"}
-                fill
-                className="object-cover"
-                objectPosition="left"
+                src="/menu.png"
+                alt="Menu"
+                width={24}
+                height={24}
+                className={isMobileMenuOpen ? "hidden" : "block"}
               />
-            </Link>
+              <svg
+                className={`w-6 h-6 ${!isMobileMenuOpen ? "hidden" : "block"}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
         </div>
-        <div
-          className={`h-full w-[20%] sm:hidden float-left flex justify-center items-center`}
-        >
-          <div
-            className="relative h-[20px] w-[20px]"
-            onClick={() => setShowMenu((prev) => !prev)}
-          >
-            <Image
-              src={showMenu ? cross : menu}
-              alt={"menu"}
-              fill
-              className="object-cover"
-            />
-          </div>{" "}
-        </div>
-        <div className="sm:h-full lg:w-[55%] h-0 w-0 sm:visible hidden font-semibold sm:flex items-center justify-center lg:gap-5 md:gap-4 sm:gap-3 float-left xl:text-[16px] lg:text-[13px] md:text-[11px] sm:text-[9px] text-[0px]">
-          {navItems.map((i) => (
-            <NavItem
-              key={i.name}
-              name={i.name}
-              linkTo={i.linkTo}
-              inNavBar={true}
-              setShowMenu={setShowMenu}
-            />
-          ))}
-        </div>
-        <div className="h-full sm:w-[15%] w-[40%] sm:mr-[5%] flex items-center justify-center lg:gap-5 xl:gap-5 md:gap-4 sm:gap-3 gap-3 float-left lg:text-[16px]">
-          <Login />
-          <CartIcon />
-        </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 space-y-2 border-t border-gray-200">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  isActive(item.href)
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
-      {showMenu ? (
-        <div
-          className={`h-[70px] pt-[20px] z-50 bg-opacity-100 absolute w-full sm:hidden font-semibold p-2 grid grid-cols-4 text-center 
-            ${colors.bgNav} ${colors.textNav}
-
-           border-t-[1px] border-b-[1px] border-zinc-500 sm:border-0 float-left text-[12px]`}
-        >
-          {navItems.map((i) => (
-            <NavItem
-              key={i.name}
-              name={i.name}
-              linkTo={i.linkTo}
-              inNavBar={true}
-            />
-          ))}
-        </div>
-      ) : (
-        <></>
-      )}
-    </div>
+    </nav>
   );
-};
-
-export default Navbar;
+}

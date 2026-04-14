@@ -1,8 +1,10 @@
-'use client'
 import Client from "@/components/Client";
+import PageLayout from "@/components/PageLayout";
 
-export default function ClientPage() {
+export default function ClientsPage() {
   return (
-    <Client/>
+    <PageLayout>
+      <Client />
+    </PageLayout>
   );
 }

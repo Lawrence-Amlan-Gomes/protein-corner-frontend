@@ -1,28 +1,29 @@
 "use client";
-import Image from "next/image";
-import cart from "../public/cart.png";
-import { useCart } from "@/app/hooks/useCart";
-import colors from "@/app/utils/colors";
 
-export default function CartIcon() {
-  const { isCart, setIsCart, cartProducts, setCartProducts } = useCart();
-  let l = 0;
-  for ( let i of cartProducts){
-    l += i.quantity
-  }
+import { useCart } from "@/app/contexts";
+import Image from "next/image";
+
+export default function CartIcon({ count }) {
+  const { setIsCartOpen } = useCart();
+
   return (
-    <div
-      className={`lg:h-[40px] lg:w-[40px] md:w-[20px] md:h-[20px] sm:w-[15px] relative sm:h-[15px] h-[30px] w-[30px] float-left`}
+    <button
+      onClick={() => setIsCartOpen(true)}
+      className="relative p-2 rounded-full hover:bg-gray-100  transition-colors duration-200"
+      aria-label="Open cart"
     >
-      <div className="absolute z-10 lg:h-[20px] lg:w-[20px] h-[15px] w-[15px] lg:text-[14px] text-[11px] top-[-25%] right-[-25%] bg-[#bbbbbb] rounded-full flex justify-center items-center text-black">
-        {l}
-      </div>
-      <div
-        onClick={() => setIsCart((prev) => !prev)}
-        className={`relative rounded-md overflow-hidden h-full w-full ${colors.keyColorBox2}`}
-      >
-        <Image src={cart} alt={"cart"} fill className="object-cover" />
-      </div>
-    </div>
+      <Image
+        src="/cart.png"
+        alt="Cart"
+        width={24}
+        height={24}
+        className="text-gray-700"
+      />
+      {count > 0 && (
+        <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          {count}
+        </span>
+      )}
+    </button>
   );
 }

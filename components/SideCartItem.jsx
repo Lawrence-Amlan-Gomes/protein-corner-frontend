@@ -1,58 +1,55 @@
-import Image from "next/image";
-import colors from "@/app/utils/colors";
-import { useCart } from "@/app/hooks/useCart";
+"use client";
 
-export default function SideCartItem({ product }) {
-  const { deleteFromCart, addToCart } = useCart();
-  let currentPrice = product.price * product.quantity;
-  if (product.discount != 0) {
-    currentPrice = Math.round(
-      product.price - (product.discount * currentPrice) / 100
-    );
-  }
-  let currentPrice2 = product.price;
-  if (product.discount != 0) {
-    currentPrice2 = Math.round(
-      product.price - (product.discount * currentPrice2) / 100
-    );
-  }
+import { useCart } from "@/app/contexts";
+import Image from "next/image";
+
+export default function SideCartItem({ item }) {
+  const { updateQuantity, removeFromCart } = useCart();
+
   return (
-    <div
-      className={`relative m-[2%] border-[1px] overflow-hidden border-[#888888] rounded-md w-[96%] h-[100px]`}
-    >
-      <div
-        className={`h-[100px] w-[40%] pl-2 float-left flex justify-start items-center`}
-      >
-        <div className={`h-[80px] w-[80px] rounded-lg relative overflow-hidden`}>
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover"
-          />
-        </div>
+    <div className="flex items-center gap-4 py-4 border-b border-gray-200">
+      <div className="relative w-20 h-20 flex-shrink-0">
+        <Image
+          src={item.image}
+          alt={item.name}
+          fill
+          className="object-cover rounded-lg"
+        />
       </div>
-      <div className={`h-full w-[60%] float-left pt-[10px] text-[12px] lg:text-[14px] overflow-hidden`}>
-        <div className="lg:pl-[10px] break-words overflow-hidden font-extrabold lg:pr-[10px] w-full">
-          {`${product.name} (${product.quantity})`}
+
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-semibold text-gray-900 truncate">
+          {item.name}
+        </h4>
+        <p className="text-orange-600 font-bold mt-1">
+          ${item.price.toFixed(2)}
+        </p>
+      </div>
+
+      <div className="flex flex-col items-end gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition-colors"
+          >
+            -
+          </button>
+          <span className="w-8 text-center text-gray-900 font-medium">
+            {item.quantity}
+          </span>
+          <button
+            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-700 transition-colors"
+          >
+            +
+          </button>
         </div>
-        <div
-          className={`lg:pl-[10px] ${colors.keyColorText2}`}
+        <button
+          onClick={() => removeFromCart(item.id)}
+          className="text-xs text-red-500 hover:text-red-600 transition-colors"
         >
-          {currentPrice2} tk
-        </div>
-      </div>
-      <div
-        onClick={() => deleteFromCart(product)}
-        className={`cursor-pointer float-left text-[30px] bottom-[10px] h-[25px] w-[25px] border-[1px] hover:border-red-600 border-[#aaaaaa] rounded-sm right-[40px] flex justify-center absolute items-center`}
-      >
-        -
-      </div>
-      <div
-        onClick={() => addToCart(product)}
-        className={`cursor-pointer float-left text-[20px] bottom-[10px] h-[25px] w-[25px] border-[1px] hover:border-green-600 border-[#aaaaaa] rounded-sm right-[10px] flex justify-center absolute items-center`}
-      >
-        +
+          Remove
+        </button>
       </div>
     </div>
   );

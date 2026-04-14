@@ -1,211 +1,184 @@
 "use client";
-import colors from "@/app/utils/colors";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import EachField from "./EachField";
-// import { getAllUsers2, registerUser } from "@/app/actions";
-import { useCart } from "@/app/hooks/useCart";
 
-const RegistrationForm = () => {
-  const { theme } = useCart();
-  const [name, setName] = useState("");
-  const [noError, setNoError] = useState(false);
-  const [nameError, setNameError] = useState({
-    iserror: false,
-    error: "Name is required",
+import { useAuth } from "@/app/contexts";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export default function RegistrationForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [firstTimeEmailCheck, setFirstTimeEmailCheck] = useState(true);
-  const [email, setEmail] = useState("");
-  const [allEmails, setAllEmails] = useState([]);
-  const [emailError, setEmailError] = useState({
-    iserror: true,
-    error: "Email is required",
-  });
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState({
-    iserror: true,
-    error: "Your password must be at least 8 characters",
-  });
+  const [error, setError] = useState("");
+  const { register } = useAuth();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (name == "") {
-      setNameError({ ...nameError, iserror: true });
-    } else {
-      setNameError({ ...nameError, iserror: false });
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!formData.name || !formData.email || !formData.password) {
+      setError("Please fill in all fields");
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
 
-  useEffect(() => {
-    // const setAllEmailsInArray = async () => {
-    //   const Emails = [];
-    //   const users = await getAllUsers2({ email: email });
-    //   for (const user of users) {
-    //     Emails.push(user.email);
-    //   }
-    //   setAllEmails(Emails);
-    // };
-    // setAllEmailsInArray();
-    if (email == "") {
-      setEmailError({ iserror: true, error: "Email is required" });
-    } else if (email.slice(-10) != "@gmail.com") {
-      setEmailError({
-        iserror: true,
-        error: "Use @gmail.com as your email format",
-      });
-    } else if (allEmails.includes(email)) {
-      setEmailError({
-        iserror: true,
-        error: "This email is already taken",
-      });
-    } else {
-      setEmailError({ ...emailError, iserror: false });
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email]);
 
-  if (firstTimeEmailCheck) {
-    setTimeout(() => {
-      if (allEmails.includes(email)) {
-        setEmailError({
-          iserror: true,
-          error: "This email is already taken",
-        });
-      } else {
-        setEmailError({ ...emailError, iserror: true });
-      }
-      setFirstTimeEmailCheck(false);
-    }, 3000);
-  }
-
-  useEffect(() => {
-    if (password.length < 8) {
-      setPasswordError({
-        iserror: true,
-        error: "Your password must be at least 8 characters",
-      });
-    } else {
-      setPasswordError({ ...passwordError, iserror: false });
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [password]);
 
-  useEffect(() => {
-    if (nameError.iserror == false && emailError.iserror == false) {
-      if (passwordError.iserror == false) {
-        setNoError(true);
-      } else {
-        setNoError(false);
-      }
-    } else {
-      setNoError(false);
-    }
-  }, [emailError.iserror, nameError.iserror, passwordError.iserror]);
+    // Simulate registration - in production, this would call an API
+    const userData = {
+      name: formData.name,
+      email: formData.email,
+    };
 
-  const submitForm = async () => {
-    // if (noError) {
-    //   const sureSubmit = confirm("Are you sure to Register?");
-    //   if (sureSubmit) {
-    //     await registerUser({
-    //       name: name,
-    //       email: email,
-    //       password: password,
-    //       phone: "Phone",
-    //       photo: "",
-    //       bio: "Bio",
-    //     });
-    //   }
-    // }
+    register(userData);
+    router.push("/");
   };
 
   return (
-    <div
-      className={`h-full w-full flex justify-center items-center overflow-y-auto ${colors.bgBody}`}
-    >
-      <div
-        className={`lg:p-10 p-5 rounded-lg lg:w-[400px] md:w-[300px] sm:w-[270px] w-[250px] text-center shadow-lg
-        bg-[#eeeeee] border-[1px] border-[#dddddd] text-[#0a0a0a]`}
-      >
-        <div className="lg:text-[30px] sm:text-[20px] text-[18px] font-bold lg:mb-10 mb-5">
-          Registration
-        </div>
-        {/* Trick the browser with this fake email and password field */}
-        <div className="opacity-0">
-          <EachField
-            label="fake"
-            type="email"
-            name="email"
-            isReal={false}
-            placeholder="Enter your email"
-            value={email}
-            setValue={setEmail}
-            iserror={emailError.iserror}
-            error={emailError.error}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <Image
+            src="/Logo.png"
+            alt="Protein Corner Logo"
+            width={80}
+            height={80}
+            className="mx-auto rounded-full"
           />
-          <EachField
-            label="fake"
-            type="password"
-            name="password"
-            isReal={false}
-            placeholder="Enter your password"
-            value={password}
-            setValue={setPassword}
-            iserror={passwordError.iserror}
-            error={passwordError.error}
-          />
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+            Create your account
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Join Protein Corner today
+          </p>
         </div>
-        <EachField
-          label="Name"
-          type="name"
-          name="name"
-          isReal={true}
-          placeholder="Enter your name"
-          value={name}
-          setValue={setName}
-          iserror={nameError.iserror}
-          error={nameError.error}
-        />
-        <EachField
-          label="Email"
-          type="email"
-          name="email"
-          isReal={true}
-          placeholder="Enter your email"
-          value={email}
-          setValue={setEmail}
-          iserror={emailError.iserror}
-          error={emailError.error}
-        />
-        <EachField
-          label="Password"
-          type="password"
-          name="password"
-          isReal={true}
-          placeholder="Enter your password"
-          value={password}
-          setValue={setPassword}
-          iserror={passwordError.iserror}
-          error={passwordError.error}
-        />
-        <button
-          onClick={submitForm}
-          className={`lg:text-[18px] md:text-[15px] text-[12px] cursor-pointer rounded-full lg:mt-10 py-2 px-6 shadow-md ${
-            noError
-              ? "bg-green-800 hover:bg-green-700 text-white"
-              : " bg-[#bababa] text-[#747474]"
-          }`}
-        >
-          Register
-        </button>
-        <p className="lg:mt-10 mt-5 lg:text-[18px] md:text-[15px] text-[12px]">
-          Already Have An Account?{" "}
-          <Link href="/login" className="text-blue-600 hover:text-blue-500">
-            Login
-          </Link>
-        </p>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700  mb-2"
+              >
+                Full Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="John Doe"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700  mb-2"
+              >
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700  mb-2"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700  mb-2"
+              >
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200"
+            >
+              Create Account
+            </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <a
+                href="/login"
+                className="font-medium text-orange-600 hover:text-orange-500"
+              >
+                Sign in
+              </a>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );
-};
-
-export default RegistrationForm;
+}
