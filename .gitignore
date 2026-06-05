@@ -34,3 +34,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Environment variable files — never commit secrets
+.env
+.env.*
+.env.example
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
